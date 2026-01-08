@@ -1,0 +1,27 @@
+{
+  "name": "api-test",
+  "version": "1.0.0",
+  "description": "User and Order services API",
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "start:user": "cd user-service && npm start",
+    "start:order": "cd order-service && npm start",
+    "dev:user": "cd user-service && npm run dev",
+    "dev:order": "cd order-service && npm run dev",
+    "test": "cucumber-js --require-module ts-node/register --require 'tests/step-definitions/**/*.ts' --require 'tests/support/**/*.ts' 'tests/features/**/*.feature'",
+    "test:pretty": "cucumber-js --require-module ts-node/register --require 'tests/step-definitions/**/*.ts' --require 'tests/support/**/*.ts' 'tests/features/**/*.feature' --format @cucumber/pretty-formatter"
+  },
+  "workspaces": [
+    "user-service",
+    "order-service"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@cucumber/cucumber": "^10.0.0",
+    "@cucumber/pretty-formatter": "^1.0.1",
+    "@playwright/test": "^1.40.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
+
