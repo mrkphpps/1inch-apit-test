@@ -1,11 +1,13 @@
+import { World } from '@cucumber/cucumber';
 import { APIRequestContext, APIResponse } from '@playwright/test';
 import { UserResponse, OrderResponse } from './interfaces';
 
 /**
- * Test context to store shared state between step definitions
- * Menas we can pass data between Given/When/Then steps
+ * Custom World class to store shared state between step definitions
+ * This allows us to pass data between Given/When/Then steps using the World object
+ * Each scenario gets its own World instance, ensuring test isolation
  */
-export class TestContext {
+export class CustomWorld extends World {
   public userServiceUrl: string = '';
   public orderServiceUrl: string = '';
   public userId: string = '';
@@ -18,7 +20,4 @@ export class TestContext {
   public ordersData: OrderResponse[] | null = null;
   public orderData: OrderResponse | null = null;
 }
-
-// Global context instance
-export const context = new TestContext();
 

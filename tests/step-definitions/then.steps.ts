@@ -1,6 +1,6 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { context } from '../support/context';
+import { CustomWorld } from '../support/context';
 import { UserResponse, OrderResponse, isUserResponse, isOrderResponse } from '../support/interfaces';
 
 /**
@@ -19,34 +19,34 @@ function parseFieldNames(...fields: string[]): string[] {
  */
 Then(
   'the user response should have status HTTP {int} and fields {string}, {string}, {string}',
-  async (expectedStatus: number, field1: string, field2: string, field3: string) => {
+  async function (this: CustomWorld, expectedStatus: number, field1: string, field2: string, field3: string) {
     // Strict assertion: User response must exist
     // If this fails, it means the When step didn't execute properly
-    if (!context.userResponse) {
+    if (!this.userResponse) {
       throw new Error('User response is null. Ensure the user retrieval step executed successfully.');
     }
     
     // Strict assertion: HTTP status code must match exactly
     // This validates the API returned the expected status code
-    expect(context.userResponse.status(), 
-      `Expected HTTP status ${expectedStatus}, but got ${context.userResponse.status()}`
+    expect(this.userResponse.status(), 
+      `Expected HTTP status ${expectedStatus}, but got ${this.userResponse.status()}`
     ).toBe(expectedStatus);
     
     // Parse field names from step definition parameters
     const expectedFields = parseFieldNames(field1, field2, field3);
     
     // Strict assertion: User data must exist and be validated
-    if (!context.userData) {
+    if (!this.userData) {
       throw new Error('User data is null. Ensure the user retrieval step executed successfully.');
     }
     
     // Strict validation: Verify response matches UserResponse interface
-    if (!isUserResponse(context.userData)) {
-      throw new Error(`User data does not match UserResponse interface: ${JSON.stringify(context.userData)}`);
+    if (!isUserResponse(this.userData)) {
+      throw new Error(`User data does not match UserResponse interface: ${JSON.stringify(this.userData)}`);
     }
     
     // Store validated user data in local variable for TypeScript type narrowing
-    const userData: UserResponse = context.userData;
+    const userData: UserResponse = this.userData;
     
     // Strict assertion: Verify each expected field exists in the response
     expectedFields.forEach(field => {
@@ -71,24 +71,24 @@ Then(
 /**
  * Then step: Validate orders response status
  */
-Then('the orders response should have status HTTP {int}', async (expectedStatus: number) => {
+Then('the orders response should have status HTTP {int}', async function (this: CustomWorld, expectedStatus: number) {
   // Strict assertion: Orders response must exist
-  if (!context.ordersResponse) {
+  if (!this.ordersResponse) {
     throw new Error('Orders response is null. Ensure the orders retrieval step executed successfully.');
   }
   
   // Strict assertion: HTTP status code must match exactly
-  expect(context.ordersResponse.status(), 
-    `Expected HTTP status ${expectedStatus}, but got ${context.ordersResponse.status()}`
+  expect(this.ordersResponse.status(), 
+    `Expected HTTP status ${expectedStatus}, but got ${this.ordersResponse.status()}`
   ).toBe(expectedStatus);
   
   // Strict assertion: Orders data must exist
-  if (!context.ordersData) {
+  if (!this.ordersData) {
     throw new Error('Orders data is null. Ensure the orders retrieval step executed successfully.');
   }
   
   // Strict assertion: Response should be an array
-  expect(Array.isArray(context.ordersData), 
+  expect(Array.isArray(this.ordersData), 
     'Orders response should be an array'
   ).toBe(true);
 });
@@ -99,32 +99,32 @@ Then('the orders response should have status HTTP {int}', async (expectedStatus:
  */
 Then(
   'the order response should have status HTTP {int} and fields {string}, {string}, {string} in the response',
-  async (expectedStatus: number, field1: string, field2: string, field3: string) => {
+  async function (this: CustomWorld, expectedStatus: number, field1: string, field2: string, field3: string) {
     // Strict assertion: Order response must exist
-    if (!context.orderResponse) {
+    if (!this.orderResponse) {
       throw new Error('Order response is null. Ensure the order creation step executed successfully.');
     }
     
     // Strict assertion: HTTP status code must match exactly
-    expect(context.orderResponse.status(), 
-      `Expected HTTP status ${expectedStatus}, but got ${context.orderResponse.status()}`
+    expect(this.orderResponse.status(), 
+      `Expected HTTP status ${expectedStatus}, but got ${this.orderResponse.status()}`
     ).toBe(expectedStatus);
     
     // Parse field names from step definition parameters
     const expectedFields = parseFieldNames(field1, field2, field3);
     
     // Strict assertion: Order data must exist and be validated
-    if (!context.orderData) {
+    if (!this.orderData) {
       throw new Error('Order data is null. Ensure the order creation step executed successfully.');
     }
     
     // Strict validation: Verify response matches OrderResponse interface
-    if (!isOrderResponse(context.orderData)) {
-      throw new Error(`Order data does not match OrderResponse interface: ${JSON.stringify(context.orderData)}`);
+    if (!isOrderResponse(this.orderData)) {
+      throw new Error(`Order data does not match OrderResponse interface: ${JSON.stringify(this.orderData)}`);
     }
     
     // Store validated order data in local variable
-    const orderData: OrderResponse = context.orderData;
+    const orderData: OrderResponse = this.orderData;
     
     // Strict assertion: Verify each expected field exists in the response
     expectedFields.forEach(field => {

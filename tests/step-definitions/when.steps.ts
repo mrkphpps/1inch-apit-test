@@ -1,22 +1,22 @@
 import { When } from '@cucumber/cucumber';
-import { context } from '../support/context';
+import { CustomWorld } from '../support/context';
 import { UserResponse, OrderResponse, isUserResponse, isOrderResponse } from '../support/interfaces';
 
 /**
  * When step: Retrieve user information
  * Makes a GET request to fetch user data by ID
  */
-When('the client retrieves user {string}', async (userId: string) => {
-  if (!context.userRequest) {
+When('the client retrieves user {string}', async function (this: CustomWorld, userId: string) {
+  if (!this.userRequest) {
     throw new Error('User Service request context not initialised');
   }
   
   // Make GET request to retrieve user information
   // Using the userId parameter from the step definition
-  context.userResponse = await context.userRequest.get(`/users/${userId}`);
+  this.userResponse = await this.userRequest.get(`/users/${userId}`);
   
   // Parse and validate the response body structure
-  const responseBody = await context.userResponse.json();
+  const responseBody = await this.userResponse.json();
   
   // Strict validation: Ensure response matches UserResponse interface
   // This catches any structural changes or missing fields early
@@ -24,26 +24,26 @@ When('the client retrieves user {string}', async (userId: string) => {
     throw new Error(`Invalid user response structure: ${JSON.stringify(responseBody)}`);
   }
   
-  // Store validated user data in context for use in Then steps
-  context.userData = responseBody;
+  // Store validated user data in World object for use in Then steps
+  this.userData = responseBody;
 });
 
 /**
  * When step: Retrieve active orders for a user
  * Makes a GET request to fetch orders filtered by userId
  */
-When('the client retrieves active orders for user {string}', async (userId: string) => {
+When('the client retrieves active orders for user {string}', async function (this: CustomWorld, userId: string) {
   // Validate that Order Service request context is initialised
-  if (!context.orderRequest) {
+  if (!this.orderRequest) {
     throw new Error('Order Service request context not initialised');
   }
   
   // Make GET request with userId query parameter
   // Filters orders to only return those for the specified user
-  context.ordersResponse = await context.orderRequest.get(`/orders?userId=${userId}`);
+  this.ordersResponse = await this.orderRequest.get(`/orders?userId=${userId}`);
   
   // Parse the response body
-  const responseBody = await context.ordersResponse.json();
+  const responseBody = await this.ordersResponse.json();
   
   // Strict validation: Ensure response is an array of OrderResponse objects
   // Validates the structure matches the svc spec
@@ -59,17 +59,17 @@ When('the client retrieves active orders for user {string}', async (userId: stri
     }
   });
   
-  // Store validated orders data in context for use in Then steps
-  context.ordersData = responseBody as OrderResponse[];
+  // Store validated orders data in World object for use in Then steps
+  this.ordersData = responseBody as OrderResponse[];
 });
 
 /**
  * When step: Create a new order
  * Makes a POST request to create an order with userId and amount
  */
-When('the client creates a new order for user {string} with amount {string}', async (userId: string, amount: string) => {
+When('the client creates a new order for user {string} with amount {string}', async function (this: CustomWorld, userId: string, amount: string) {
   // Validate that Order Service request context is initialised
-  if (!context.orderRequest) {
+  if (!this.orderRequest) {
     throw new Error('Order Service request context not initialised');
   }
   
@@ -83,7 +83,7 @@ When('the client creates a new order for user {string} with amount {string}', as
   
   // Make POST request to create a new order
   // Request body matches the API specification: { userId, amount }
-  context.orderResponse = await context.orderRequest.post('/orders', {
+  this.orderResponse = await this.orderRequest.post('/orders', {
     data: {
       userId: parseInt(userId, 10),
       amount: amountNumber,
@@ -94,7 +94,7 @@ When('the client creates a new order for user {string} with amount {string}', as
   });
   
   // Parse and validate the response body structure
-  const responseBody = await context.orderResponse.json();
+  const responseBody = await this.orderResponse.json();
   
   // Strict validation: Ensure response matches OrderResponse interface
   // This validates the created order has all required fields
@@ -102,7 +102,7 @@ When('the client creates a new order for user {string} with amount {string}', as
     throw new Error(`Invalid order response structure: ${JSON.stringify(responseBody)}`);
   }
   
-  // Store validated order data in context for use in Then steps
-  context.orderData = responseBody;
+  // Store validated order data in World object for use in Then steps
+  this.orderData = responseBody;
 });
 
