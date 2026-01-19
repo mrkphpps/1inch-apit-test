@@ -83,7 +83,13 @@ npm run test:pretty
 Tests are located in the `tests/` directory:
 - `tests/features/` - Gherkin feature files (.feature)
 - `tests/step-definitions/` - Step definition implementations
-- `tests/support/` - Test utilities, interfaces, and context
+- `tests/support/` - Test utilities, interfaces, and World object
+
+The project uses Cucumber's **World object pattern** for test state management:
+- Each scenario gets its own isolated `CustomWorld` instance
+- The World object stores shared state (API contexts, responses, data) between step definitions
+- This ensures test isolation and follows Cucumber best practices
+- The World class is defined in `tests/support/context.ts` and registered in `tests/support/world-setup.ts`
 
 ### Test Scenarios
 
